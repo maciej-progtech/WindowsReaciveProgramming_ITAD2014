@@ -29,7 +29,8 @@ namespace ReactiveSamples
         public MainPage()
         {
             this.InitializeComponent();
-            var pointerMove = Observable.FromEventPattern<PointerEventHandler, PointerRoutedEventArgs>(h => this.canvas.PointerMoved += h, h => this.canvas.PointerMoved -= h);//
+            var pointerMove = Observable.FromEventPattern<PointerEventHandler, PointerRoutedEventArgs>
+                (h => this.canvas.PointerMoved += h, h => this.canvas.PointerMoved -= h);//
             //.Sample( TimeSpan.FromSeconds( 1 ) );
             //.Throttle( TimeSpan.FromMilliseconds( 100 ) );
 
@@ -43,7 +44,7 @@ namespace ReactiveSamples
             polewo
                 .ObserveOn(CoreDispatcherScheduler.Current)
                 .Subscribe(m => label_LR.Text = "left");
-            
+
             var poprawo = from ev in pointerMove
                               .ObserveOn(CoreDispatcherScheduler.Current)
                           where ev.EventArgs.GetCurrentPoint(canvas).Position.X >= this.canvas.RenderSize.Width / 2

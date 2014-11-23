@@ -12,11 +12,39 @@ namespace ReactiveUISample
 {
     public class MyViewModel : ReactiveObject
     {
-        ObservableAsPropertyHelper<string> firstName;
-        ObservableAsPropertyHelper<string> lastName;
-        ObservableAsPropertyHelper<List<string>> nameDays;
         string name = string.Empty;
-        public ReactiveCommand<object> ClearCommand { get; private set; }
+        public string Name
+        {   //read-write property
+            get { return name; }
+            set
+            {
+                this.RaiseAndSetIfChanged
+                      (ref name, value);
+            }
+        }
+
+        ObservableAsPropertyHelper<string> firstName;
+        public string FirstName // output property
+        {
+            get { return firstName.Value; }
+        }
+
+        ObservableAsPropertyHelper<string> lastName;
+        public string LastName // output property
+        {
+            get { return lastName.Value; }
+        }
+
+        ObservableAsPropertyHelper<List<string>> nameDays;
+        public List<string> NameDays // output property
+        {
+            get { return nameDays.Value; }
+        }
+
+
+        //read-only property
+        public ReactiveCommand<object> ClearCommand
+        { get; private set; }
 
         public MyViewModel()
         {
@@ -40,11 +68,8 @@ namespace ReactiveUISample
                 .Where(x => x == null || x.Length < 4)
                 .Throttle(TimeSpan.FromSeconds(3))
                 .Merge(this.WhenAnyValue(x => x.FirstName)
-                    .Where(x => x != null && x.Length >= 4)
-                    .Throttle(TimeSpan.FromMilliseconds(400)))
-                //.Select(args => SearchText)
-                //.Merge(
-                //    textBoxEnterCommand.Executed.Select(e => SearchText))
+                .Where(x => x != null && x.Length >= 4)
+                .Throttle(TimeSpan.FromMilliseconds(400)))
                 .DistinctUntilChanged();
 
             // Setup an Observer for the search operation
@@ -59,41 +84,36 @@ namespace ReactiveUISample
             nameDays = results.ObserveOn(CoreDispatcherScheduler.Current)
                 .ToProperty(this, x => x.NameDays);
 
-            var firstNameOK=this.WhenAnyValue(x => x.FirstName)
+            var firstNameOK = this.WhenAnyValue(x => x.FirstName)
                 .Select(x => !string.IsNullOrWhiteSpace(x) && x.Length >= 3);
-            var lastNameOK=this.WhenAnyValue(x => x.LastName)
+            var lastNameOK = this.WhenAnyValue(x => x.LastName)
                 .Select(x => !string.IsNullOrWhiteSpace(x) && x.Length >= 3);
 
-            ClearCommand = ReactiveCommand.Create(firstNameOK.Zip(lastNameOK,(x,y)=>x&&y));
-            ClearCommand.Subscribe(x => Name = string.Empty);
-        }
+            ClearCommand = ReactiveCommand.Create
+                (
+                //Observable condition to enable command:
+                firstNameOK.Zip(lastNameOK, (x, y) => x && y)
+                );
+            ClearCommand.Subscribe
+                (
+                //action:
+                x => Name = string.Empty
+                );
 
-        public string Name
-        {
-            get { return name; }
-            set { this.RaiseAndSetIfChanged(ref name, value); }
+            ClearCommand = ReactiveCommand.Create
+            (
+                //Observable condition to enable command:
+            this.WhenAnyValue(x => x.LastName)
+            .Select(name => !string.IsNullOrEmpty(name))
+            );
+            ClearCommand.Subscribe
+            (
+                //action:
+            x => Name = string.Empty
+            );
         }
-        public string FirstName
-        {
-            get { return firstName.Value; }
-        }
-        public string LastName
-        {
-            get { return lastName.Value; }
-        }
-        public List<string> NameDays
-        {
-            get { return nameDays.Value; }
-        }
-
-        //public List<string> Temp
-        //{
-        //    get { return new List<string>{"aaa","bbb"}; }
-        //}
-
+        #region search
         private readonly Random random = new Random(DateTime.Now.Millisecond);
-
-
         private SearchResult DoSearch(string searchTerm)
         {
             ThreadSleep(random.Next(100, 500)); // Simulate latency
@@ -110,12 +130,13 @@ namespace ReactiveUISample
             public IEnumerable<NameDay> Results { get; set; }
 
         }
-        private void ThreadSleep(int milliseconds)
+        private static void ThreadSleep(int milliseconds)
         {
             using (EventWaitHandle tmpEvent = new ManualResetEvent(false))
             {
                 tmpEvent.WaitOne(TimeSpan.FromMilliseconds(milliseconds));
             }
         }
+        #endregion search
     }
 }

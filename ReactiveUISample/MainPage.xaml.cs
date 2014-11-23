@@ -32,28 +32,10 @@ namespace ReactiveUISample
 
             this.Bind(ViewModel, x => x.Name, x => x.name.Text);
             this.WhenAny(x => x.ViewModel.FirstName, x => x.Value ?? "")
-               .BindTo(this, x => x.firstName.Text); 
+               .BindTo(this, x => x.firstName.Text);
             this.WhenAny(x => x.ViewModel.LastName, x => x.Value ?? "")
                 .BindTo(this, x => x.lastName.Text);
-            //this.WhenAny(x => x.ViewModel.NameDays, x => x.Value ?? new List<string>() )
-            //    .BindTo(this, x => x.nameDays.ItemsSource);
-            //this.WhenAny(x => x.ViewModel.Temp, x => x.Value ?? new List<string>())
-            //    .BindTo(this, x => x.nameDays.ItemsSource);
-            //this.WhenAny(x => x.ViewModel.Temp, x => x.Value ?? new List<string>())
-            //    .BindTo(this, x => x.nameDays.ItemsSource);
-            //nameDays.ItemsSource = ViewModel.Temp;
         }
-
-        //public MyViewModel ViewModel
-        //{
-        //    get;
-        //    set;
-        //    //get { return (MyViewModel)GetValue(ViewModelProperty); }
-        //    //set { SetValue(ViewModelProperty, value); }
-        //}
-        //public static readonly DependencyProperty ViewModelProperty =
-        //    DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(MainPage), new PropertyMetadata(null));
-
         public MyViewModel ViewModel
         {
             get { return viewModel; }
@@ -62,7 +44,7 @@ namespace ReactiveUISample
         object IViewFor.ViewModel
         {
             get { return viewModel; }
-            set { viewModel = (MyViewModel) value; }
+            set { viewModel = (MyViewModel)value; }
         }
     }
 }

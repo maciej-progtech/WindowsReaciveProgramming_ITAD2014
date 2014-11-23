@@ -9,12 +9,12 @@ namespace ReactiveUISample
     public class NameDay
     {
         static public NameDay[] NameDays { get; private set; }
-        public int Month {  get; private set; }
-        public int Day {  get; private set; }
-        public string Names {  get; private set; }
+        public int Month { get; private set; }
+        public int Day { get; private set; }
+        public string Names { get; private set; }
         public override string ToString()
         {
-            return string.Format("{0}.{1}: {2}",Month,Day,Names);
+            return string.Format("{0}.{1}: {2}", Month, Day, Names);
         }
         private NameDay(int month, int day, string names)
         {
