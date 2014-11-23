@@ -26,9 +26,15 @@ packages/Rx-Interfaces.2.2.5/lib/
 packages/Rx-Linq.2.2.5/lib/
 packages/Rx-PlatformServices.2.2.5/lib/
 packages/Rx-WinRT.2.2.5/lib/
+packages/Rx-Xaml.2.2.5/lib/
+packages/reactiveui.6.2.0/lib/
+packages/reactiveui-core.6.2.0/lib/
+packages/Splat.1.5.1/lib/
+
 ReactiveSamples/bin
 ReactiveSamples/obj
-packages/Rx-Xaml.2.2.5/lib/
+ReactiveUISample/bin
+ReactiveUISample/obj
 
 .DS_Store
 .AppleDouble
@@ -51,4 +57,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-ReactiveSamples.v12.suo
+*.suo
+*.csproj.user
