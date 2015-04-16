@@ -29,16 +29,21 @@ namespace ReactiveSamples
         public MainPage()
         {
             this.InitializeComponent();
-            var pointerMove = Observable.FromEventPattern<PointerEventHandler, PointerRoutedEventArgs>
-                (h => this.canvas.PointerMoved += h, h => this.canvas.PointerMoved -= h);//
+            var pointerMove = 
+                Observable.FromEventPattern<PointerEventHandler, PointerRoutedEventArgs>
+                (h => this.canvas.PointerMoved += h, h => this.canvas.PointerMoved -= h)
             //.Sample( TimeSpan.FromSeconds( 1 ) );
-            //.Throttle( TimeSpan.FromMilliseconds( 100 ) );
+            .Throttle( TimeSpan.FromMilliseconds( 100 ) );
 
             pointerMove
               .ObserveOn(CoreDispatcherScheduler.Current)
-              .Subscribe(m => label_mousemove.Text = String.Format("x={0},y={1}", m.EventArgs.GetCurrentPoint(canvas).Position.X, m.EventArgs.GetCurrentPoint(canvas).Position.Y));
+              .Subscribe
+              (m => label_mousemove.Text = String.Format("x={0},y={1}", 
+                  m.EventArgs.GetCurrentPoint(canvas).Position.X, 
+                  m.EventArgs.GetCurrentPoint(canvas).Position.Y));
 
-            var polewo = from ev in pointerMove.ObserveOn(CoreDispatcherScheduler.Current)
+            var polewo = from ev in 
+                             pointerMove.ObserveOn(CoreDispatcherScheduler.Current)
                          where ev.EventArgs.GetCurrentPoint(canvas).Position.X < this.canvas.RenderSize.Width / 2
                          select ev;
             polewo
@@ -56,9 +61,14 @@ namespace ReactiveSamples
 
 
 
-            var mouseDown = from ev in Observable.FromEventPattern<PointerEventHandler, PointerRoutedEventArgs>(h => this.canvas.PointerPressed += h, h => this.canvas.PointerPressed -= h)
+            var mouseDown = from ev in 
+                                Observable.FromEventPattern<PointerEventHandler, PointerRoutedEventArgs>
+                                (h => this.canvas.PointerPressed += h, h => this.canvas.PointerPressed -= h)
                             select ev.EventArgs.GetCurrentPoint(canvas).Position;
-            var mouseUp = from ev in Observable.FromEventPattern<PointerEventHandler, PointerRoutedEventArgs>(h => this.canvas.PointerReleased += h, h => this.canvas.PointerReleased -= h)
+            var mouseUp = from ev in Observable.FromEventPattern
+                              <PointerEventHandler, PointerRoutedEventArgs>
+                              (h => this.canvas.PointerReleased += h, h => 
+                                  this.canvas.PointerReleased -= h)
                           select ev.EventArgs.GetCurrentPoint(canvas).Position;
 
             var drawline = mouseDown.Zip(mouseUp,

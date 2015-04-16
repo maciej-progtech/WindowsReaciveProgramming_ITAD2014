@@ -62,7 +62,12 @@ namespace ReactiveUISample
                 if (s.Count() > 1) return s[1]; else return string.Empty;
             }).ToProperty(this, x => x.LastName);
 
-
+            //BAD:
+            //var input = this.WhenAnyValue(x => x.FirstName);
+            //var results = from searchTerm in input
+            //              where !string.IsNullOrWhiteSpace(searchTerm)
+            //              select DoSearch(searchTerm).Results.Select(x => x.ToString()).ToList();
+            //GOOD:
             // Transform the event stream into a stream of strings (the input values)
             var input = this.WhenAnyValue(x => x.FirstName)
                 .Where(x => x == null || x.Length < 4)
@@ -89,16 +94,16 @@ namespace ReactiveUISample
             var lastNameOK = this.WhenAnyValue(x => x.LastName)
                 .Select(x => !string.IsNullOrWhiteSpace(x) && x.Length >= 3);
 
-            ClearCommand = ReactiveCommand.Create
-                (
-                //Observable condition to enable command:
-                firstNameOK.Zip(lastNameOK, (x, y) => x && y)
-                );
-            ClearCommand.Subscribe
-                (
-                //action:
-                x => Name = string.Empty
-                );
+            //ClearCommand = ReactiveCommand.Create
+            //    (
+            //    //Observable condition to enable command:
+            //    firstNameOK.Zip(lastNameOK, (x, y) => x && y)
+            //    );
+            //ClearCommand.Subscribe
+            //    (
+            //    //action:
+            //    x => Name = string.Empty
+            //    );
 
             ClearCommand = ReactiveCommand.Create
             (
@@ -116,7 +121,7 @@ namespace ReactiveUISample
         private readonly Random random = new Random(DateTime.Now.Millisecond);
         private SearchResult DoSearch(string searchTerm)
         {
-            ThreadSleep(random.Next(100, 500)); // Simulate latency
+            ThreadSleep(random.Next(200, 1000)); // Simulate latency
             return new SearchResult
             {
                 SearchTerm = searchTerm,
